@@ -11,7 +11,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
-
+/*global window, document*/
 (function(win, doc) {
 	"use strict";
 	var anim = function (Anim) {
@@ -118,7 +118,6 @@ limitations under the License. */
 
 							//for each dimension (Top, Right, etc.)
 							for (i; d = dir[i]; i++) {
-								
 								//margin => marginTop
 								//borderWidth => borderTopWidth
 								//borderRadius => borderTopRadius
@@ -215,11 +214,12 @@ limitations under the License. */
 			_();
 		};
 
-		Anim.fx = { //CSS names which need special handling
+		//CSS names which need special handling
+		Anim.fx = {
 
-			_: function (o, n, to, fr, a, e) { //for generic fx
-				fr = parseFloat(fr) || 0,
-					to = parseFloat(to) || 0,
+			_: function (o, n, to, fr, a) { //for generic fx
+				fr = parseFloat(fr) || 0;
+					to = parseFloat(to) || 0;
 					o.s[a] = (o.p >= 1 ? to : (o.p * (to - fr) + fr)) + o.u;
 			},
 
@@ -230,7 +230,7 @@ limitations under the License. */
 				Anim.fx._(o, n, to, o._fr, a, e);
 			},
 
-			opacity: function (o, n, to, fr, a, e) {
+			opacity: function (o, n, to, fr, a) {
 				if (isNaN(fr = fr || o._fr)) {	
 					fr = n.style;
 					fr.zoom = 1;
@@ -274,7 +274,7 @@ limitations under the License. */
 
 				try {
 					o.s[a] = (v.length > 3 ? "rgba(" : "rgb(") + v.join(",") + ")";
-				} catch (e) {
+				} catch (err) {
 					Anim.rgbaIE = 1;
 				}
 			}
@@ -285,14 +285,15 @@ limitations under the License. */
 		Anim.toRGBA = function (s, value) {
 			value = [0, 0, 0, 0];
 			s.replace(/\s/g, "").replace(Anim.RGBA, function (i, a, b, c, f, g, h, l, m, n, o, w, x, y, z) {
-				var h = [a + a || f, b + b || g, c + c || h],
+				var hue = [a + a || f, b + b || g, c + c || h],
 						p = [l, m, n];
 
 				for (i = 0; i < 3; i++) {	
-					h[i] = parseInt(h[i], 16), p[i] = Math.round(p[i] * 2.55);
+					hue[i] = parseInt(hue[i], 16);
+					p[i] = Math.round(p[i] * 2.55);
 				}
 
-				value = [h[0] || p[0] || w || 0, h[1] || p[1] || x || 0, h[2] || p[2] || y || 0, o || z || 1];
+				value = [hue[0] || p[0] || w || 0, hue[1] || p[1] || x || 0, hue[2] || p[2] || y || 0, o || z || 1];
 			});
 			return value;
 		};
