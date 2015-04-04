@@ -7,18 +7,23 @@ Why Anim? Because sometimes if you only want a little animation, you may not wan
 
 Anim can animate any property that accepts number and color values including but not limited to backgroundColor, opacity, width, scrollTop, etc.
 
+**UPDATE** After code refactoring (to fix little glitches and improve clarity), the code now weighs **2.74kb**.
+
 demo
 =====
+
 http://relay.github.com/anim_demo.html
 
 features
 =====
+
 * Simple chaining syntax ``anim(---).anim(---).anim(---)``
 * 3 easing functions
 * shorthand syntax ``anim("div1", {opacity: 0.6}, 2)``
 
 usage:
 =====
+
 ``anim(node, properties, duration, ease*)``
 or ``anim(delay)``
 or ``anim(callbackFunction)``
@@ -45,6 +50,7 @@ This function returns an object with one method ("anim"), which allows you to st
 
 examples:
 =====
+
     anim(box, {opacity: {to: 0.2, fr: 1}},     2);  //long form specifying 'to' and 'from'
     anim(box, {opacity: 0.2},                    2);
     anim(box, {height:  300},                    2,    "ease-in");
@@ -67,6 +73,7 @@ run 2 animations with a 1 second delay in between
 
 support:
 =====
+
 Supports IE6+, Firefox 2+, Chrome, iOS, Android
 
 If ``requestAnimationFrame`` is available it is used, which provides the highest frame rate and throttling if the CPU is busy or if another tab is focused.
