@@ -11,7 +11,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
-/*global window, document*/
+
 (function(win, doc) {
 	"use strict";
 	var anim = function (Anim) {
@@ -134,26 +134,26 @@ limitations under the License. */
 					return w["webkitR" + a] || w["r" + a] || w["mozR" + a] || w["msR" + a] || w["oR" + a];
 				}(win, "requestAnimationFrame");
 
-		Anim.defaults = function (o, node, attr, easing, style) {
-			style			= node.style;
-			o.attr		= attr; //attribute
-			o.node		= node; //node
-			o.style		= (attr in style) ? style : node; //= node.style || node
-			o.easing	= o.easing || easing; //easing
+		Anim.defaults = function (o, n, a, e, s) {
+			s = n.style;
+			o.a = a; //attribute
+			o.n = n; //node
+			o.s = (a in s) ? s : n; //= n.style || n
+			o.e = o.e || e; //easing
 
-			o.fr = o.fr || (o.fr === 0 ? 0 : o.s == node ? node[attr] :
-											(win.getComputedStyle ? win.getComputedStyle(node, null) : node.currentStyle)[attr]);
+			o.fr = o.fr || (o.fr === 0 ? 0 : o.s == n ? n[a] :
+											(win.getComputedStyle ? win.getComputedStyle(n, null) : n.currentStyle)[a]);
 
 			o.u = (/\d(\D+)$/.exec(o.to) || /\d(\D+)$/.exec(o.fr) || [0, 0])[1]; //units (px, %)
 
 			//which animation fx to use. Only color needs special treatment.
-			o.fn = /color/i.test(attr) ? Anim.fx.color : (Anim.fx[attr] || Anim.fx._);
+			o.fn = /color/i.test(a) ? Anim.fx.color : (Anim.fx[a] || Anim.fx._);
 
 			//the mutex is composed of the animating property name and a unique number
-			o.mx = "anim_" + attr;
-			node[o.mx] = o.mxv = mutex;
+			o.mx = "anim_" + a;
+			n[o.mx] = o.mxv = mutex;
 
-			if (node[o.mx] != o.mxv) {
+			if (n[o.mx] != o.mxv) {
 				o.mxv = null; //test expando
 			}
 		};
@@ -221,17 +221,17 @@ limitations under the License. */
 			},
 
 			width: function (o, n, to, fr, a, e) { //for width/height fx
-				if ((o._fr <= 0)) {	
+				if (!(o._fr >= 0)) {	
 					o._fr = !isNaN(fr = parseFloat(fr)) ? fr : a == "width" ? n.clientWidth : n.clientHeight;
 				}
 				Anim.fx._(o, n, to, o._fr, a, e);
 			},
 
-			opacity: function (o, n, to, fr, a) {
+			opacity: function (o, n, to, fr, a, e) {
 				if (isNaN(fr = fr || o._fr)) {	
 					fr = n.style;
 						fr.zoom = 1;
-						fr = o._fr = (/alpha\(opacity=(\d+)\b/i.exec(fr.filter)|| {})[1] / 100 || 1;
+						fr = o._fr = (/alpha\(opacity=(\d+)\b/i.exec(fr.filter) || {})[1] / 100 || 1;
 				}
 				fr *= 1;
 				to = (o.p * (to - fr) + fr);
@@ -243,7 +243,7 @@ limitations under the License. */
 				}
 			},
 
-			color: function (o, n, to, fr, a, i, v) {
+			color: function (o, n, to, fr, a, e, i, v) {
 				if (!o.ok) {
 					to = o.to = Anim.toRGBA(to);
 					fr = o.fr = Anim.toRGBA(fr);
@@ -286,8 +286,7 @@ limitations under the License. */
 						p = [l, m, n];
 
 				for (i = 0; i < 3; i++) {	
-					h[i] = parseInt(h[i], 16);
-					p[i] = Math.round(p[i] * 2.55);
+					h[i] = parseInt(h[i], 16), p[i] = Math.round(p[i] * 2.55);
 				}
 
 				value = [h[0] || p[0] || w || 0, h[1] || p[1] || x || 0, h[2] || p[2] || y || 0, o || z || 1];
