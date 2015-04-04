@@ -117,8 +117,8 @@ limitations under the License. */
 									d;
 
 							//for each dimension (Top, Right, etc.)
-							for (i; ; i++) {
-								d = dir[i];
+							for (i; d = dir[i]; i++) {
+								
 								//margin => marginTop
 								//borderWidth => borderTopWidth
 								//borderRadius => borderTopRadius
