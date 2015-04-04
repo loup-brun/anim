@@ -20,15 +20,15 @@ limitations under the License. */
 			var prop,
 					key,
 					queue = [],
-					callback = function (i) {
+					callback = function () {
 						//our internal callback function maintains a queue of objects 
 						//that contain callback info. If the object is an array of length
 						//over 2, then it is parameters for the next animation. If the object
 						//is an array of length 1 and the item in the array is a number,
 						//then it is a timeout period, otherwise it is a callback function.
-						
-						i = queue.shift();
-						
+
+						var i = queue.shift();
+
 						if (i) {
 							if (i[1])  {
 								Anim.apply(this, i).anim(callback);
@@ -50,10 +50,9 @@ limitations under the License. */
 			if (node > 0 || !node) {
 				properties = {};
 				duration = 0;
-				callback(queue = [[node || 0]]);
+				queue =[[node || 0]];
+				callback(queue);
 			} else {
-
-
 				// if the node is a string (ie an id), then get the element 
 				if (node.charAt) {
 					node = doc.getElementById(node);
@@ -110,12 +109,16 @@ limitations under the License. */
 				mutex = 1,
 
 				//{border:1} => {borderTop:1, borderRight:1, borderBottom:1, borderLeft:1}
-				expand = function (properties, dimension, dir, key, i, d, property) {
+				expand = function (properties, dimension, dir, key) {
 					for (key in properties) { //for each animation property
 						if (key in dimension) {
-							property = properties[key];
-							// Louis: added < operator
-							for (i = 0; d < dir[i]; i++) { //for each dimension (Top, Right, etc.)
+							var i = 0,
+									property = properties[key],
+									d;
+
+							//for each dimension (Top, Right, etc.)
+							for (i; ; i++) {
+								d = dir[i];
 								//margin => marginTop
 								//borderWidth => borderTopWidth
 								//borderRadius => borderTopRadius
@@ -134,8 +137,8 @@ limitations under the License. */
 					return w["webkitR" + a] || w["r" + a] || w["mozR" + a] || w["msR" + a] || w["oR" + a];
 				}(win, "requestAnimationFrame");
 
-		Anim.defaults = function (o, n, a, e, s) {
-			s = n.style;
+		Anim.defaults = function (o, n, a, e) {
+			var s = n.style;
 			o.a = a; //attribute
 			o.n = n; //node
 			o.s = (a in s) ? s : n; //= n.style || n
@@ -168,8 +171,8 @@ limitations under the License. */
 						if (i < 50) {
 							for (o in g) {
 								o = g[o];
-									o.p = 1;
-									o.fn(o, o.n, o.to, o.fr, o.a, o.e);
+								o.p = 1;
+								o.fn(o, o.n, o.to, o.fr, o.a, o.e);
 							}
 
 							//callback && callback();
@@ -230,8 +233,8 @@ limitations under the License. */
 			opacity: function (o, n, to, fr, a, e) {
 				if (isNaN(fr = fr || o._fr)) {	
 					fr = n.style;
-						fr.zoom = 1;
-						fr = o._fr = (/alpha\(opacity=(\d+)\b/i.exec(fr.filter) || {})[1] / 100 || 1;
+					fr.zoom = 1;
+					fr = o._fr = (/alpha\(opacity=(\d+)\b/i.exec(fr.filter) || {})[1] / 100 || 1;
 				}
 				fr *= 1;
 				to = (o.p * (to - fr) + fr);
