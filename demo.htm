@@ -1,6 +1,8 @@
 <!doctype html>
 <html>
-	<head><title>Animations by Anim</title>
+	<head>
+		<meta charset="utf-8">
+	<title>Animations by Anim</title>
 		<script src="anim.js"></script>
 		<script>function byId(s) {return document.getElementById(s)}</script>
 		<style>
@@ -38,9 +40,9 @@
 
 			<tr>
 				<td class="sect" style="height:180px">
-					<div id=b1 style="width:60px; height:60px"> </div>
+					<div id="b1" style="width:60px; height:60px"> </div>
 				</td><td>
-				<textarea id=bt readonly>
+				<textarea id="bt" readonly>
 					anim(1)
 					.anim("b1", {width:"150px", height:"150px"}, 0.5).anim(0.5)
 					.anim("b1", {width:{to:"60px", e:"ease-in"}, height:"60px"}, 0.5).anim(0.5)
@@ -52,9 +54,9 @@
 
 			<tr>
 				<td class="sect">
-					<div id=c1 style="width:60px; height:60px; position:relative"> </div>
+					<div id="c1" style="width:60px; height:60px; position:relative"> </div>
 				</td><td>
-				<textarea id=ct readonly>
+				<textarea id="ct" readonly>
 					anim("c1", {borderRadius:"30px", left:"50%"}, 1.5, "ease-out")
 					.anim(0.1)
 					.anim("c1", {borderRadius:0, left:0}, 1.5, "ease-in")
