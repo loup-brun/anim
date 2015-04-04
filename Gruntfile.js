@@ -1,11 +1,10 @@
 module.exports = function(grunt) {
 
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+
 	var config = {
 		uglify: {
 			js: {
-				options: {
-					beautify: true
-				},
 				files: {
 					'anim.min.js': ['anim.min.js']
 				}
@@ -13,7 +12,11 @@ module.exports = function(grunt) {
 		}
 	};
 
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.initConfig()
+	grunt.initConfig(config);
 
-}
+	grunt.registerTask(
+		'default',
+		'Minify the main script',
+		['uglify']
+	);
+};
