@@ -16,44 +16,63 @@ limitations under the License. */
 	"use strict";
 	var anim = function (Anim) {
 
-		Anim = function (n, g, t, e) {
-			var a, o, c,
-					q = [],
+		Anim = function (node, properties, duration, easing) {
+			var prop,
+					key,
+					queue = [],
 					callback = function (i) {
 						//our internal callback function maintains a queue of objects 
 						//that contain callback info. If the object is an array of length
 						//over 2, then it is parameters for the next animation. If the object
 						//is an array of length 1 and the item in the array is a number,
 						//then it is a timeout period, otherwise it is a callback function.
-						if (i = q.shift()) {
-							i[1] ? Anim.apply(this, i).anim(callback) :
-
-							i[0] > 0 ? win.setTimeout(callback, i[0] * 1000) :
-							(i[0](), callback());
+						
+						i = queue.shift();
+						
+						if (i) {
+							if (i[1])  {
+								Anim.apply(this, i).anim(callback);
+							} else {
+								if (i[0] > 0) {
+									win.setTimeout(callback, i[0] * 1000);
+								} else {
+									i[0]();
+									callback();
+								}
+							}
 						}
+						//}
 					};
 
-			if (n.charAt) {
-				n = doc.getElementById(n);
-			}
 
 			//if the 1st param is a number then treat it as a timeout period.
 			//If the node reference is null, then we skip it and run the next callback
 			//so that we can continue with the animation without throwing an error.
-			if (n > 0 || !n) {
-				g = {}, t = 0, callback(q = [[n || 0]]);
+			if (node > 0 || !node) {
+				console.log('got to node ', node);
+				properties = {};
+				duration = 0;
+				callback(queue = [[node || 0]]);
+			} else {
+
+
+				// if the node is a string (ie an id), then get the element 
+				if (node.charAt) {
+					node = doc.getElementById(node);
+				}
 			}
+
 
 			//firefox don't allow reading shorthand CSS styles like "margin" so
 			//we have to expand them to be "margin-left", "margin-top", etc.
 			//Also, expanding them allows the 4 values to animate independently 
 			//in the case that the 4 values are different to begin with.
-			expand(g, {
+			expand(properties, {
 				padding: 0,
 				margin: 0,
 				border: "Width"
 			}, [T, R, B, L]);
-			expand(g, {
+			expand(properties, {
 				borderRadius: "Radius"
 			}, [T + L, T + R, B + R, B + L]);
 
@@ -64,24 +83,26 @@ limitations under the License. */
 			//is complete, they won't clash and the last animation prevails.
 			++mutex;
 
-			for (a in g) {
-				o = g[a];
-				if (!o.to && o.to !== 0) o = g[a] = {
-					to: o
-				}; //shorthand {margin:0} => {margin:{to:0}}
+			for (prop in properties) {
+				key = properties[prop];
+				if (!key.to && key.to !== 0) {
+					key = properties[prop] = {
+						to: key
+					}; //shorthand {margin:0} => {margin:{to:0}}
+				}
 
-				Anim.defs(o, n, a, e); //set defaults, get initial values, selects animation fx
+				Anim.defaults(key, node, prop, easing); //set defaults, get initial values, selects animation fx
 			}
 
-			Anim.iter(g, t * 1000, callback);
+			Anim.iter(properties, duration * 1000, callback);
 
 			return {
 				//this allows us to queue multiple animations together in compact syntax
 				anim: function () {
-					q.push([].slice.call(arguments));
-					return this
+					queue.push([].slice.call(arguments));
+					return this;
 				}
-			}
+			};
 		};
 
 		var T = "Top",
@@ -113,9 +134,9 @@ limitations under the License. */
 
 				timeout = function (w, a) {
 					return w["webkitR" + a] || w["r" + a] || w["mozR" + a] || w["msR" + a] || w["oR" + a];
-				}(window, "requestAnimationFrame");
+				}(win, "requestAnimationFrame");
 
-		Anim.defs = function (o, n, a, e, s) {
+		Anim.defaults = function (o, n, a, e, s) {
 			s = n.style;
 			o.a = a; //attribute
 			o.n = n; //node
@@ -123,7 +144,7 @@ limitations under the License. */
 			o.e = o.e || e; //easing
 
 			o.fr = o.fr || (o.fr === 0 ? 0 : o.s == n ? n[a] :
-											(window.getComputedStyle ? getComputedStyle(n, null) : n.currentStyle)[a]);
+											(win.getComputedStyle ? win.getComputedStyle(n, null) : n.currentStyle)[a]);
 
 			o.u = (/\d(\D+)$/.exec(o.to) || /\d(\D+)$/.exec(o.fr) || [0, 0])[1]; //units (px, %)
 
@@ -227,11 +248,11 @@ limitations under the License. */
 				if (!o.ok) {
 					to = o.to = Anim.toRGBA(to);
 					fr = o.fr = Anim.toRGBA(fr);
-					
+
 					if (to[3] === 0) {
 						to = [].concat(fr), to[3] = 0;	
 					}
-					
+
 					if (fr[3] === 0) {
 						fr = [].concat(to), fr[3] = 0;
 					}
