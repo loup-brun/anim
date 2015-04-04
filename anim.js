@@ -41,7 +41,6 @@ limitations under the License. */
 								}
 							}
 						}
-						//}
 					};
 
 
@@ -49,7 +48,6 @@ limitations under the License. */
 			//If the node reference is null, then we skip it and run the next callback
 			//so that we can continue with the animation without throwing an error.
 			if (node > 0 || !node) {
-				console.log('got to node ', node);
 				properties = {};
 				duration = 0;
 				callback(queue = [[node || 0]]);
@@ -112,22 +110,22 @@ limitations under the License. */
 				mutex = 1,
 
 				//{border:1} => {borderTop:1, borderRight:1, borderBottom:1, borderLeft:1}
-				expand = function (g, dim, dir, a, i, d, o) {
-					for (a in g) { //for each animation property
-						if (a in dim) {
-							o = g[a];
+				expand = function (properties, dimension, dir, key, i, d, property) {
+					for (key in properties) { //for each animation property
+						if (key in dimension) {
+							property = properties[key];
 							// Louis: added < operator
 							for (i = 0; d < dir[i]; i++) { //for each dimension (Top, Right, etc.)
 								//margin => marginTop
 								//borderWidth => borderTopWidth
 								//borderRadius => borderTopRadius
-								g[Anim.replace(dim[a], "") + d + (dim[a] || "")] = {
-									to: (o.to === 0) ? o.to : (o.to || o),
-									fr: o.fr,
-									e: o.e
+								properties[key.replace(dimension[key], "") + d + (dimension[key] || "")] = {
+									to: (property.to === 0) ? property.to : (property.to || property),
+									fr: property.fr,
+									e: property.e
 								};
 							}
-							delete g[a];
+							delete properties[key];
 						}
 					}
 				},
@@ -169,12 +167,13 @@ limitations under the License. */
 
 						if (i < 50) {
 							for (o in g) {
-								o = g[o],
-									o.p = 1,
+								o = g[o];
+									o.p = 1;
 									o.fn(o, o.n, o.to, o.fr, o.a, o.e);
 							}
 
-							callback && callback();
+							//callback && callback();
+							callback();
 
 						} else {
 
@@ -278,8 +277,8 @@ limitations under the License. */
 		Anim.fx.height = Anim.fx.width;
 
 		Anim.RGBA = /#(.)(.)(.)\b|#(..)(..)(..)\b|(\d+)%,(\d+)%,(\d+)%(?:,([\d\.]+))?|(\d+),(\d+),(\d+)(?:,([\d\.]+))?\b/;
-		Anim.toRGBA = function (s, v) {
-			v = [0, 0, 0, 0];
+		Anim.toRGBA = function (s, value) {
+			value = [0, 0, 0, 0];
 			s.replace(/\s/g, "").replace(Anim.RGBA, function (i, a, b, c, f, g, h, l, m, n, o, w, x, y, z) {
 				var h = [a + a || f, b + b || g, c + c || h],
 						p = [l, m, n];
@@ -288,9 +287,9 @@ limitations under the License. */
 					h[i] = parseInt(h[i], 16), p[i] = Math.round(p[i] * 2.55);
 				}
 
-				v = [h[0] || p[0] || w || 0, h[1] || p[1] || x || 0, h[2] || p[2] || y || 0, o || z || 1];
+				value = [h[0] || p[0] || w || 0, h[1] || p[1] || x || 0, h[2] || p[2] || y || 0, o || z || 1];
 			});
-			return v;
+			return value;
 		};
 
 		return Anim;
